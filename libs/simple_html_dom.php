@@ -89,9 +89,13 @@ function file_get_html($url, $use_include_path = false, $context=null, $offset =
  
 function getContents($url) {
     $ch = curl_init();
- 
+    
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_HEADER, false);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_REFERER, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
  
     $data = curl_exec($ch);
     curl_close($ch);

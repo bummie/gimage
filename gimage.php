@@ -45,10 +45,10 @@ function display()
 {
     global $RESULT_AMOUNT, $DISPLAY, $SEARCH;
 
-    if($SEARCH != null || $SEARCH != "")
+    if($SEARCH != null || !empty($SEARCH))
     {
         $ADRESSES = returnURLArray($SEARCH, $RESULT_AMOUNT);
-        if($ADRESSES != null || $ADRESSES != "")
+        if($ADRESSES != null || !empty($ADRESSES))
         {
             switch ($DISPLAY) {
                 case 'table':
@@ -69,6 +69,10 @@ function display()
                         echo '<img src="'.$value.'" height="100" width="120">';
                         echo $value.'<br>';
                     }
+                break;
+                 case 'json':
+                    header('Content-Type: application/json');
+					echo json_encode($ADRESSES);
                 break;
                 default:
                     displayTable($ADRESSES, 'false');
@@ -113,10 +117,10 @@ function buildUrl($search)
     global $MASTER_URL, $VALUES_SEARCH, $TYPE, $SIZE, $COLOR, $LICENCE;
    
     $search_url = "";
-    if($search != null || $search != "")
+    if($search != null || !empty($search))
     {
         $TDS = buildTbs($TYPE, $SIZE, $COLOR, $LICENCE);
-        if($SAFE != null || $SAFE != "" || $SAFE == "1" )
+        if($SAFE != null || !empty($SAFE) || $SAFE == "1" )
         {
             if($TDS != null || $TDS != "tbs=")
             {
@@ -137,6 +141,7 @@ function buildUrl($search)
             }        
         }
     }
+    print('URL: ' . $search_url);
     return $search_url;
 }   
 
@@ -145,10 +150,10 @@ function buildTbs($type, $size, $color, $licence)
     global $SVALUES_TYPE, $SVALUES_SIZE, $SVALUES_COLOR, $SVALUES_LICENCE;
 
     $base = 'tbs=';
-    if($type != null || $type == ""){if(count($SVALUES_TYPE) >= $type){ $base = $base.$SVALUES_TYPE[$type];}}
-    if($size != null || $size == ""){ if(strlen($base) > 6){if(count($SVALUES_SIZE) >= $size){$base = $base.','.$SVALUES_SIZE[$size];}}else{if(count($SVALUES_SIZE) >= $size){$base = $base.$SVALUES_SIZE[$size];}}}
-    if($color != null || $color == ""){ if(strlen($base) > 6){if(count($SVALUES_COLOR) >= $color){$base = $base.','.$SVALUES_COLOR[$color];}}else{if(count($SVALUES_COLOR) >= $color){$base = $base.$SVALUES_COLOR[$color];}}}
-    if($licence != null || $licence == ""){ if(strlen($base) > 6){if(count($SVALUES_LICENCE) >= $licence){$base = $base.','.$SVALUES_LICENCE[$licence];}}else{if(count($SVALUES_LICENCE) >= $licence){$base = $base.$SVALUES_LICENCE[$licence];}}}
+    if($type != null || !empty($type)){if(count($SVALUES_TYPE) >= $type){ $base = $base.$SVALUES_TYPE[$type];}}
+    if($size != null || !empty($size)){ if(strlen($base) > 6){if(count($SVALUES_SIZE) >= $size){$base = $base.','.$SVALUES_SIZE[$size];}}else{if(count($SVALUES_SIZE) >= $size){$base = $base.$SVALUES_SIZE[$size];}}}
+    if($color != null || !empty($color)){ if(strlen($base) > 6){if(count($SVALUES_COLOR) >= $color){$base = $base.','.$SVALUES_COLOR[$color];}}else{if(count($SVALUES_COLOR) >= $color){$base = $base.$SVALUES_COLOR[$color];}}}
+    if($licence != null || !empty($licence)){ if(strlen($base) > 6){if(count($SVALUES_LICENCE) >= $licence){$base = $base.','.$SVALUES_LICENCE[$licence];}}else{if(count($SVALUES_LICENCE) >= $licence){$base = $base.$SVALUES_LICENCE[$licence];}}}
     return $base;
 }
 
@@ -160,16 +165,21 @@ function returnURLArray($search, $amount)
     $amount_url = 0;
     $_amount = $amount;
 
-    if($_amount == null || $_amount == "") $_amount = 0;
+    if($_amount == null || empty($_amount)) $_amount = 0;
     if($_amount >= 15) $_amount = 15;
     if($_amount <= 0) $_amount = 0;
 
-   if($adresse != null || $adresse != ""){
-        $htmla = file_get_html($adresse);
+   if($adresse != null || !empty($adresse)){
+   		
+       	$htmla = file_get_html($adresse);
+        print($htmla);
+
         foreach($htmla->find('a') as $elements)
         {
+        	print($elements->href . '<br>');
             if(stripos($elements->href, $suburl))
             {
+            	echo "True<br>";
                 if($_amount >= $amount_url)
                 {
                     $array_res[$amount_url] = retrieveIMGUrl($elements->href);
@@ -182,13 +192,12 @@ function returnURLArray($search, $amount)
     {
         echo "Error";
     }
-
    return $array_res;
 }
 
 function retrieveIMGUrl($url)
 {
-    if(url != null || url == "")
+    if(url != null || !empty($url))
     {
         $png = ".png&";
         $jpg = ".jpg&";
