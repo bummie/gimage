@@ -1,4 +1,4 @@
-gImage
+gImage **Currently broken due to change in google images**
 ======
 
 - Simple Google Image parser written in PHP. 
